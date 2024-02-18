@@ -50,12 +50,17 @@ public class Foo : MonoBehaviour
         var httpClientHandler = new FancyHttpMessageHandler(this);
         var httpClient = new HttpClient(httpClientHandler);
         Debug.Log("Making http client async call");
-        var googleResponseTask = httpClient.GetStringAsync("https://google.com");
+        var httpResponseTask =
+            httpClient.PostAsync("https://7dyvt4pwyk.execute-api.us-west-2.amazonaws.com/prod/signup", new StringContent("{\"email\": \"taco.com\"}"));
+        // "{\"email\": \"taco.com\"}", "application/json");
+        
+        
+        
         // Debug.Log("About to call the blocking .Result on the response");
         // var googleResponse = googleResponseTask.Result;
         Debug.Log("About to await the result");
-        var googleResponse = await googleResponseTask;
-        Debug.Log($"Got a response from google: {googleResponse}");
+        var httpResponse = await httpResponseTask;
+        Debug.Log($"Got a response from the server: {httpResponse}");
         
         
         

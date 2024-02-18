@@ -38,7 +38,7 @@ public class FancyHttpMessageHandler : HttpMessageHandler
         // response.Content = new StringContent("Hallo there. Using a task completion now!");
 
         var completion = new TaskCompletionSource<HttpResponseMessage>();
-        unityEnvironment.StartCoroutine(CompleteHttpRequestViaCoroutine(completion));
+        unityEnvironment.StartCoroutine(CompleteHttpRequestViaCoroutine(request, completion));
         // completion.SetResult(response);
         return completion.Task;
 
@@ -47,7 +47,8 @@ public class FancyHttpMessageHandler : HttpMessageHandler
         // throw new NotImplementedException();
     }
 
-    private IEnumerator CompleteHttpRequestViaCoroutine(TaskCompletionSource<HttpResponseMessage> completion)
+    private IEnumerator CompleteHttpRequestViaCoroutine(HttpRequestMessage httpRequestMessage,
+        TaskCompletionSource<HttpResponseMessage> completion)
     {
         // var response = new HttpResponseMessage();
         // response.Content = new StringContent("Hallo there. Using a task completion from a coroutine now!");
@@ -60,8 +61,11 @@ public class FancyHttpMessageHandler : HttpMessageHandler
         // unityRequest.method = "GET";
         // var unityRequest = UnityWebRequest.Get("https://google.com");
         // var unityRequest = UnityWebRequest.Get("https://7dyvt4pwyk.execute-api.us-west-2.amazonaws.com/prod/signup");
-        var unityRequest = UnityWebRequest.Post("https://7dyvt4pwyk.execute-api.us-west-2.amazonaws.com/prod/signup",
-            "{\"email\": \"taco.com\"}", "application/json");
+        // var unityRequest = UnityWebRequest.Post("https://7dyvt4pwyk.execute-api.us-west-2.amazonaws.com/prod/signup",
+            // "{\"email\": \"taco.com\"}", "application/json");
+            Debug.Log("Getting uri and content from http request message");
+            var unityRequest = UnityWebRequest.Post(httpRequestMessage.RequestUri,
+                httpRequestMessage.Content.ReadAsStringAsync().Result, "application/json");
         
         // completion.SetResult(response);
 

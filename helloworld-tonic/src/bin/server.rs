@@ -1,6 +1,6 @@
-use tonic::{transport::Server, Request, Response, Status};
 use helloworld_tonic::generated_protos::helloworld::greeter_server::{Greeter, GreeterServer};
 use helloworld_tonic::generated_protos::helloworld::{HelloReply, HelloRequest};
+use tonic::{transport::Server, Request, Response, Status};
 
 #[derive(Debug, Default)]
 pub struct MyGreeter {}
@@ -21,15 +21,49 @@ impl Greeter for MyGreeter {
     }
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "[::1]:50051".parse()?;
-    let greeter = MyGreeter::default();
+// #[tokio::main]
+// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//     let addr = "[::1]:50051".parse()?;
+//     let greeter = MyGreeter::default();
+//
+//     println!("Starting server at address: {:?}", addr);
+//
+//     Server::builder()
+//         .add_service(GreeterServer::new(greeter))
+//         .serve(addr)
+//         .await?;
+//
+//     Ok(())
+// }
 
-    Server::builder()
-        .add_service(GreeterServer::new(greeter))
-        .serve(addr)
-        .await?;
+#[derive(Debug)]
+struct MyDumbError {
+    msg: String,
+}
 
-    Ok(())
+fn main() -> Result<(), MyDumbError> {
+    let rt = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .or_else(|e| {
+            Err(MyDumbError {
+                msg: format!("{:?}", e),
+            })
+        })?;
+    rt.block_on(async {
+        let addr = "[::1]:50051".parse().map_err(|e| MyDumbError {
+            msg: format!("{:?}", e),
+        })?;
+        let greeter = MyGreeter::default();
+
+        println!("Starting server at address: {:?}", addr);
+
+        Server::builder()
+            .add_service(GreeterServer::new(greeter))
+            .serve(addr)
+            .await
+            .map_err(|e| MyDumbError {
+                msg: format!("{:?}", e),
+            })
+    })
 }

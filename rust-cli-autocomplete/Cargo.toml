@@ -1,0 +1,13 @@
+[package]
+name = "rust-cli-autocomplete"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rustyline = "14.0.0"
+rustyline-derive = "0.10.0"
+env_logger = "0.11.3"
+reedline = "0.30.0"
+nu-ansi-term = "0.50.0"
